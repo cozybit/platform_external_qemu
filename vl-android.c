@@ -3717,9 +3717,23 @@ int main(int argc, char **argv, char **envp)
 
     /* Initialize TCP dump */
     if (android_op_tcpdump) {
-        if (qemu_tcpdump_start(android_op_tcpdump) < 0) {
-            fprintf(stdout, "could not start packet capture: %s\n", strerror(errno));
+        /* Parse the tcpdump parameter */
+        char *comma_ptr = strchr(android_op_tcpdump, ',');
+
+        if (comma_ptr) {
+	    *comma_ptr = '\0';
+	    int netmask = strtol(comma_ptr+1, NULL, 0);
+            if (netmask > 0 && netmask <= 3) {
+                if (qemu_tcpdump_start(android_op_tcpdump, netmask) < 0) {
+                    fprintf(stdout, "could not start packet capture: %s\n", strerror(errno));
+                }
+            } else {
+                PANIC("<mask> value not valid, see '-help-tcpdump'");
+            }
+        } else {
+            PANIC("Check -tcpdump <file>,<mask> options format.");
         }
+
     }
 
     /* Initialize modem */

@@ -771,10 +771,24 @@ static int
 do_network_capture_start( ControlClient  client, char*  args )
 {
     if ( !args ) {
-        control_write( client, "KO: missing <file> argument, see 'help network capture start'\r\n" );
+        control_write( client, "KO: missing <file>,<mask> argument, see 'help network capture start'\r\n" );
         return -1;
     }
-    if ( qemu_tcpdump_start(args) < 0) {
+
+    char *comma_ptr = strchr(args, ',');
+    if (!comma_ptr) {
+        control_write( client, "KO: check <file>,<mask> argument, see 'help network capture start'\r\n" );
+	return -1;
+    }
+
+    *comma_ptr = '\0';
+    int mask = strtol(comma_ptr+1, NULL, 0);
+    if (mask < 1 || mask > 3) {
+        control_write( client, "KO: <mask> value not valid, see 'help network capture start'\r\n" );
+	return -1;
+    }
+
+    if ( qemu_tcpdump_start(args, mask) < 0) {
         control_write( client, "KO: could not start capture: %s", strerror(errno) );
         return -1;
     }

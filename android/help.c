@@ -1389,13 +1389,18 @@ static void
 help_tcpdump(stralloc_t  *out)
 {
     PRINTF(
-    "  use the -tcpdump <file> option to start capturing all network packets\n"
+    "  use the -tcpdump <file>,<mask> option to start capturing all network packets\n"
     "  that are sent through the emulator's virtual Ethernet LAN. You can later\n"
     "  use tools like WireShark to analyze the traffic and understand what\n"
     "  really happens.\n\n"
 
     "  note that this captures all Ethernet packets, and is not limited to TCP\n"
     "  connections.\n\n"
+
+    "  the mask value allows users to select the interface being inspected:\n"
+    "  - 1 enables capture on eth0 (regular interface)\n"
+    "  - 2 enables capture on eth1 (inter-emulator interface)\n"
+    "  - 3 enables capture on both interfaces.\n\n"
 
     "  you can also start/stop the packet capture dynamically through the console;\n"
     "  see the 'network capture start' and 'network capture stop' commands for\n"

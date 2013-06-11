@@ -1778,7 +1778,7 @@ DEF("netfast", 0, QEMU_OPTION_netfast, \
     "-netfast disable network shaping\n")
 
 DEF("tcpdump", HAS_ARG, QEMU_OPTION_tcpdump, \
-    "-tcpdump <file> capture network packets to file\n")
+    "-tcpdump <file>,<mask> capture network packets to file\n")
 
 DEF("boot-property", HAS_ARG, QEMU_OPTION_boot_property, \
     "-boot-property <name>=<value> set system property on boot\n")

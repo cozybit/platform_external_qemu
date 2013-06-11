@@ -133,6 +133,8 @@
 #include "android/android.h"
 #include "telephony/modem_driver.h"
 
+#define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
+
 static VLANState *first_vlan;
 
 /* see http://en.wikipedia.org/wiki/List_of_device_bandwidths or a complete list */
@@ -793,7 +795,7 @@ void slirp_output(const uint8_t *pkt, int pkt_len)
     printf("slirp output:\n");
     hex_dump(stdout, pkt, pkt_len);
 #endif
-    if (qemu_tcpdump_active)
+    if (CHECK_BIT(qemu_tcpdump_active,1))
         qemu_tcpdump_packet(pkt, pkt_len);
 
     if (!slirp_vc)
@@ -817,7 +819,7 @@ static ssize_t slirp_receive(VLANClientState *vc, const uint8_t *buf, size_t siz
     printf("slirp input:\n");
     hex_dump(stdout, buf, size);
 #endif
-    if (qemu_tcpdump_active)
+    if (CHECK_BIT(qemu_tcpdump_active,1))
         qemu_tcpdump_packet(buf, size);
 
 #ifdef CONFIG_ANDROID
@@ -1634,6 +1636,8 @@ static ssize_t net_socket_receive(VLANClientState *vc, const uint8_t *buf, size_
 static ssize_t net_socket_receive_dgram(VLANClientState *vc, const uint8_t *buf, size_t size)
 {
     NetSocketState *s = vc->opaque;
+    if (CHECK_BIT(qemu_tcpdump_active, 2))
+        qemu_tcpdump_packet(buf, size);
 
     return socket_sendto(s->fd, buf, size, &s->dgram_dst);
 }
@@ -1716,6 +1720,9 @@ static void net_socket_send_dgram(void *opaque)
         qemu_set_fd_handler(s->fd, NULL, NULL, NULL);
         return;
     }
+    if (CHECK_BIT(qemu_tcpdump_active, 2))
+        qemu_tcpdump_packet(s->buf, size);
+
     qemu_send_packet(s->vc, s->buf, size);
 }
 

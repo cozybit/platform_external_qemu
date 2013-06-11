@@ -70,7 +70,7 @@ pcap_write_header( FILE*  out )
 }
 
 int
-qemu_tcpdump_start( const char*  filepath )
+qemu_tcpdump_start( const char*  filepath, int mask )
 {
     if (!capture_init) {
         capture_init = 1;
@@ -89,7 +89,7 @@ qemu_tcpdump_start( const char*  filepath )
     if (pcap_write_header(capture_file) < 0)
         return -1;
 
-    qemu_tcpdump_active = 1;
+    qemu_tcpdump_active = mask;
     return 0;
 }
 
